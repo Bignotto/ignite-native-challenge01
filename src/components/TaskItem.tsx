@@ -1,9 +1,8 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { Task } from "./TasksList";
-
-// import { Container } from './styles';
+import pencilIcon from "../assets/icons/pencil/pencil.png";
 
 interface TaskItemProps {
   task: Task;
@@ -41,6 +40,12 @@ export function TaskItem({
         >
           {task.title}
         </Text>
+        <TouchableOpacity
+          testID={`trash-${task.id}`}
+          onPress={() => removeTask(task.id)}
+        >
+          <Image source={pencilIcon} />
+        </TouchableOpacity>
       </TouchableOpacity>
     </View>
   );

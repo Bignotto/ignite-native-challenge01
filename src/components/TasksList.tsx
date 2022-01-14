@@ -11,9 +11,10 @@ import {
 import Icon from "react-native-vector-icons/Feather";
 
 import { ItemWrapper } from "./ItemWrapper";
+import { TaskItem } from "./TaskItem";
 
 import trashIcon from "../assets/icons/trash/trash.png";
-import { TaskItem } from "./TaskItem";
+import pencilIcon from "../assets/icons/pencil/pencil.png";
 
 export interface Task {
   id: number;
@@ -49,6 +50,7 @@ export function TasksList({
               removeTask={() => removeTask(item.id)}
               editTask={() => editTask(item.id, "newTaskTitle")}
             />
+
             <TouchableOpacity
               testID={`trash-${index}`}
               style={{ paddingHorizontal: 24 }}
