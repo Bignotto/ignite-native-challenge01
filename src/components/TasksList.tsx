@@ -45,7 +45,7 @@ export function TasksList({
               task={item}
               toggleTaskDone={() => toggleTaskDone(item.id)}
               removeTask={() => removeTask(item.id)}
-              editTask={() => editTask(item.id, "newTaskTitle")}
+              editTask={editTask}
             />
           </ItemWrapper>
         );

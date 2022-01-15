@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -12,6 +12,7 @@ import { Task } from "./TasksList";
 import pencilIcon from "../assets/icons/pencil/pencil.png";
 import trashIcon from "../assets/icons/trash/trash.png";
 import cancelIcon from "../assets/icons/cancel/cancel.png";
+import disabledTrash from "../assets/icons/disabled_trash/disabled_trash.png";
 
 interface TaskItemProps {
   task: Task;
@@ -28,13 +29,35 @@ export function TaskItem({
 }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState(task.title);
+  const inputRef = useRef<TextInput>(null);
 
   function handleIsEditing() {
-    isEditing ? setIsEditing(false) : setIsEditing(true);
+    // isEditing ? setIsEditing(false) : setIsEditing(true);
+    setIsEditing(true);
   }
 
+  function handleSubmitEditTask(id: number) {
+    setIsEditing(false);
+    editTask(id, newTaskTitle);
+  }
+
+  function handleCancelEditing() {
+    setIsEditing(false);
+    setNewTaskTitle(task.title);
+  }
+
+  useEffect(() => {
+    if (inputRef.current) {
+      if (isEditing) {
+        inputRef.current.focus();
+      } else {
+        inputRef.current.blur();
+      }
+    }
+  }, [isEditing]);
+
   return (
-    <View>
+    <View style={styles.component}>
       <TouchableOpacity
         testID={`button-${task.id}`}
         activeOpacity={0.7}
@@ -47,46 +70,43 @@ export function TaskItem({
         >
           {task.done && <Icon name="check" size={12} color="#FFF" />}
         </View>
-        {isEditing ? (
-          <TextInput
-            style={styles.input}
-            value={newTaskTitle}
-            onChangeText={setNewTaskTitle}
-            returnKeyType="send"
-            selectionColor="#666666"
-          />
-        ) : (
-          <Text style={task.done ? styles.taskTextDone : styles.taskText}>
-            {task.title}
-          </Text>
-        )}
-
-        <TouchableOpacity testID={`trash-${task.id}`} onPress={handleIsEditing}>
-          <Image source={isEditing ? cancelIcon : pencilIcon} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          testID={`trash-${task.id}`}
-          style={{ paddingHorizontal: 24 }}
-          onPress={() => removeTask(task.id)}
-        >
-          <Image source={trashIcon} />
-        </TouchableOpacity>
+        <TextInput
+          ref={inputRef}
+          style={task.done ? styles.taskTextDone : styles.taskText}
+          value={newTaskTitle}
+          editable={isEditing}
+          onChangeText={setNewTaskTitle}
+          onSubmitEditing={() => handleSubmitEditTask(task.id)}
+          onBlur={handleCancelEditing}
+        />
+        <View style={styles.iconContainer}>
+          <TouchableOpacity
+            testID={`trash-${task.id}`}
+            onPress={isEditing ? handleCancelEditing : handleIsEditing}
+          >
+            <Image source={isEditing ? cancelIcon : pencilIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            testID={`trash-${task.id}`}
+            disabled={isEditing}
+            onPress={() => removeTask(task.id)}
+          >
+            <Image source={!isEditing ? trashIcon : disabledTrash} />
+          </TouchableOpacity>
+        </View>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  input: {
-    // flex: 1,
-    // height: 22,
-    // paddingHorizontal: 20,
-    backgroundColor: "#FFF",
-    // borderTopLeftRadius: 5,
-    // borderBottomLeftRadius: 5,
-    // borderRightWidth: 1,
-    // borderRightColor: "#EBEBEB",
-    // color: "#666666",
+  component: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  iconContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
   },
   taskButton: {
     flex: 1,
@@ -108,6 +128,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   taskText: {
+    flex: 1,
     color: "#666",
     fontFamily: "Inter-Medium",
   },
@@ -121,6 +142,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   taskTextDone: {
+    flex: 1,
     color: "#1DB863",
     textDecorationLine: "line-through",
     fontFamily: "Inter-Medium",

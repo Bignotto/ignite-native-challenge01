@@ -54,6 +54,7 @@ export function Home() {
     if (idx < 0) return;
 
     newTasks[idx].title = newTaskTitle;
+    console.log({ newTaskTitle });
 
     setTasks(newTasks);
   }
