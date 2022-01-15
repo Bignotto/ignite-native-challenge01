@@ -10,6 +10,7 @@ import {
 import Icon from "react-native-vector-icons/Feather";
 import { Task } from "./TasksList";
 import pencilIcon from "../assets/icons/pencil/pencil.png";
+import trashIcon from "../assets/icons/trash/trash.png";
 import cancelIcon from "../assets/icons/cancel/cancel.png";
 
 interface TaskItemProps {
@@ -29,10 +30,6 @@ export function TaskItem({
   const [newTaskTitle, setNewTaskTitle] = useState(task.title);
 
   function handleIsEditing() {
-    // if (!isEditing) {
-    //   setIsEditing(true);
-    //   return;
-    // }
     isEditing ? setIsEditing(false) : setIsEditing(true);
   }
 
@@ -42,18 +39,17 @@ export function TaskItem({
         testID={`button-${task.id}`}
         activeOpacity={0.7}
         style={styles.taskButton}
-        //TODO - use onPress (toggle task) prop
         onPress={() => toggleTaskDone(task.id)}
       >
         <View
           testID={`marker-${task.id}`}
-          //TODO - use style prop
           style={task.done ? styles.taskMarkerDone : styles.taskMarker}
         >
           {task.done && <Icon name="check" size={12} color="#FFF" />}
         </View>
         {isEditing ? (
           <TextInput
+            style={styles.input}
             value={newTaskTitle}
             onChangeText={setNewTaskTitle}
             returnKeyType="send"
@@ -68,12 +64,30 @@ export function TaskItem({
         <TouchableOpacity testID={`trash-${task.id}`} onPress={handleIsEditing}>
           <Image source={isEditing ? cancelIcon : pencilIcon} />
         </TouchableOpacity>
+        <TouchableOpacity
+          testID={`trash-${task.id}`}
+          style={{ paddingHorizontal: 24 }}
+          onPress={() => removeTask(task.id)}
+        >
+          <Image source={trashIcon} />
+        </TouchableOpacity>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  input: {
+    // flex: 1,
+    // height: 22,
+    // paddingHorizontal: 20,
+    backgroundColor: "#FFF",
+    // borderTopLeftRadius: 5,
+    // borderBottomLeftRadius: 5,
+    // borderRightWidth: 1,
+    // borderRightColor: "#EBEBEB",
+    // color: "#666666",
+  },
   taskButton: {
     flex: 1,
     paddingHorizontal: 24,
