@@ -1,8 +1,16 @@
-import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { Task } from "./TasksList";
 import pencilIcon from "../assets/icons/pencil/pencil.png";
+import cancelIcon from "../assets/icons/cancel/cancel.png";
 
 interface TaskItemProps {
   task: Task;
@@ -17,6 +25,17 @@ export function TaskItem({
   removeTask,
   editTask,
 }: TaskItemProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState(task.title);
+
+  function handleIsEditing() {
+    // if (!isEditing) {
+    //   setIsEditing(true);
+    //   return;
+    // }
+    isEditing ? setIsEditing(false) : setIsEditing(true);
+  }
+
   return (
     <View>
       <TouchableOpacity
@@ -33,18 +52,21 @@ export function TaskItem({
         >
           {task.done && <Icon name="check" size={12} color="#FFF" />}
         </View>
+        {isEditing ? (
+          <TextInput
+            value={newTaskTitle}
+            onChangeText={setNewTaskTitle}
+            returnKeyType="send"
+            selectionColor="#666666"
+          />
+        ) : (
+          <Text style={task.done ? styles.taskTextDone : styles.taskText}>
+            {task.title}
+          </Text>
+        )}
 
-        <Text
-          //TODO - use style prop
-          style={task.done ? styles.taskTextDone : styles.taskText}
-        >
-          {task.title}
-        </Text>
-        <TouchableOpacity
-          testID={`trash-${task.id}`}
-          onPress={() => removeTask(task.id)}
-        >
-          <Image source={pencilIcon} />
+        <TouchableOpacity testID={`trash-${task.id}`} onPress={handleIsEditing}>
+          <Image source={isEditing ? cancelIcon : pencilIcon} />
         </TouchableOpacity>
       </TouchableOpacity>
     </View>
